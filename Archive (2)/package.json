@@ -1,0 +1,28 @@
+{
+  "name": "static-files",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx tape test.js | npx tap-spec",
+    "watch-server": "nodemon index.js",
+    "watch-client": "cd client-react && npm start"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.4",
+    "supertest": "^4.0.2",
+    "tap-spec": "^5.0.0",
+    "tape": "^5.0.0"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "http-hash-router": "^2.0.1",
+    "react-router-dom": "^5.2.0",
+    "socket.io": "^4.0.1",
+    "st": "^2.0.0",
+    "watchify": "^3.11.1",
+    "yo-yo": "^1.4.1"
+  }
+}

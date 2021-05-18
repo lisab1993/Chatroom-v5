@@ -52,6 +52,12 @@ class App extends React.Component {
     }
   }
 
+  handleSubmitMessage (text) {
+    const message = { nick: this.state.nick, room: this.state.room, text }
+    console.log(message)
+    socket.emit('chat message', message)
+  }
+
 
   render() {
     return (
@@ -80,7 +86,16 @@ class App extends React.Component {
             </nav>
 
             <Switch>
-              <Route exact path="/"><Home isLoggedIn={this.state.isLoggedIn} nick={this.state.nick} /></Route>
+              <Route exact path="/">
+                <Home isLoggedIn={this.state.isLoggedIn} 
+                nick={this.state.nick}
+                messages={this.state.messages} 
+                room={this.state.room}
+                Room={Rooms}
+                MessageForm={MessageForm}
+                handleSubmitMessage={this.handleSubmitMessage}
+                />
+                </Route>
 
               <Route path="/Login"><Login /></Route>
 
@@ -98,11 +113,7 @@ class App extends React.Component {
         </Router>
 
 
-        {/* <Rooms messages={this.state.messages} setRoom={(room) => this.setState({ room })} room={this.state.room} />
-        <MessageForm handleSubmit={this.handleSubmit.bind(this)} />
-        {this.state.messages
-          .filter(msg => msg.room === this.state.room)
-          .map((msg, index) => <li key={index}>{msg.text}</li>)} */}
+
       </div>
     )
   }
@@ -110,8 +121,23 @@ class App extends React.Component {
 
 
 function Home(props) {
-  return (props.isLoggedIn ? <div>Welcome {props.nick}!</div> : <div>Please Sign In</div>)
+  return (props.isLoggedIn ? 
+  <div>
+    Welcome {props.nick}!
+    <Rooms messages={props.messages} setRoom={(room) => this.setState({ room })} room={props.room} />
+        <MessageForm handleSubmitMessage={this.handleSubmitMessage.bind(this)} /> 
+        {props.messages
+          .filter(msg => msg.room === props.room)
+          .map((msg, index) => <li key={index}>{msg.text}</li>)}
+  </div> 
 
+  : 
+
+  <div
+  >Please Sign In
+  </div>
+
+  )
 }
 
 function Login() {

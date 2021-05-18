@@ -1,6 +1,7 @@
 import './App.css'
 import React from 'react'
 import Rooms from './Rooms'
+import Signin from './Signin'
 import MessageForm from './MessageForm'
 import io from '../../node_modules/socket.io/client-dist/socket.io.js'
 import {
@@ -17,14 +18,17 @@ class App extends React.Component {
     this.state = {
       messages: [],
       room: '',
-      nick: ''
+      nick: '',
+      isLoggedIn: false,
+      userValue: '',
     }
+
+    this.handleAll = this.handleAll.bind(this)
   }
 
-  componentDidMount() {
-    const nickname = prompt('enter your nickname:')
-    this.setState({ nick: nickname })
 
+
+  componentDidMount() {
     socket.on('chat message', msg => {
       console.log(this.state.messages)
       this.setState({ messages: this.state.messages.concat(msg) })
@@ -39,11 +43,15 @@ class App extends React.Component {
       })
   }
 
-  handleSubmit(text) {
-    const message = { nick: this.state.nick, room: this.state.room, text }
-    console.log(message)
-    socket.emit('chat message', message)
+
+  handleAll(nick) {
+    this.setState({ nick })
+    if (nick !== '') {
+      console.log('hello from handleislogged')
+      this.setState({isLoggedIn: true})
+    }
   }
+
 
   render() {
     return (
@@ -54,7 +62,7 @@ class App extends React.Component {
             <nav>
               <ul>
                 <li>
-                  <Link to="/Home">Home</Link>
+                  <Link to="/">Home</Link>
                 </li>
                 {/* <li>
                   <Link to="/Rooms/:room">Rooms</Link>
@@ -66,34 +74,43 @@ class App extends React.Component {
                   <Link to="/Logout">Logout</Link>
                 </li>
                 <li>
-                  <Link to="/Signup">Signup</Link>
+                  <Link to="/Signin">Signin</Link>
                 </li>
               </ul>
             </nav>
 
             <Switch>
-              <Route exact path="/"><Home /></Route>
-              {/* <Route path="/Rooms/:room"><Room /></Route> */}
+              <Route exact path="/"><Home isLoggedIn={this.state.isLoggedIn} nick={this.state.nick} /></Route>
+
               <Route path="/Login"><Login /></Route>
+
               <Route path="/Logout"><Logout /></Route>
-              <Route path="/Signup"><Signup /></Route>
+
+              <Route path="/Signin">
+                <Signin setState={(nick) => this.setState({ nick })}
+                handleAll={this.handleAll} 
+                userValue={this.state.userValue} 
+              />
+              </Route>
+
             </Switch>
           </div>
         </Router>
 
 
-        <Rooms messages={this.state.messages} setRoom={(room) => this.setState({ room })} room={this.state.room} />
+        {/* <Rooms messages={this.state.messages} setRoom={(room) => this.setState({ room })} room={this.state.room} />
         <MessageForm handleSubmit={this.handleSubmit.bind(this)} />
         {this.state.messages
           .filter(msg => msg.room === this.state.room)
-          .map((msg, index) => <li key={index}>{msg.text}</li>)}
+          .map((msg, index) => <li key={index}>{msg.text}</li>)} */}
       </div>
     )
   }
 }
 
-function Home() {
-  return <h2>Home</h2>
+function Home(props) {
+  return (props.isLoggedIn ? <div>Welcome {props.nick}!</div> : <div>Please Sign In</div>)
+
 }
 
 function Login() {
@@ -104,8 +121,6 @@ function Logout() {
   return <h2>Logout</h2>
 }
 
-function Signup() {
-  return <h2>Signup</h2>
-}
+
 
 export default App

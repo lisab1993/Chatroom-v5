@@ -108,6 +108,7 @@ class App extends React.Component {
   }
 }
 
+
 function Home(props) {
   return (props.isLoggedIn ? <div>Welcome {props.nick}!</div> : <div>Please Sign In</div>)
 

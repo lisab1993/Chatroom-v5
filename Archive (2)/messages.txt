@@ -51,3 +51,8 @@
 {"nick":"dude","room":"general","text":"asdf"}
 {"nick":"dude","room":"hackz","text":"sadfsdafsadfs"}
 {"nick":"dude","room":"hackz","text":"sadfsdafsadfsfsdafas"}
+{"nick":"lisa","room":"chill","text":"gggg"}
+{"nick":"lisa","room":"hackz","text":"ffff"}
+{"nick":"lisa","room":"chill","text":"hhh"}
+{"nick":"lisa","room":"chill","text":"rrr"}
+{"nick":"lisa","room":"programming","text":"It works!!!!!"}

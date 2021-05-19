@@ -9,7 +9,9 @@ export default function MessageForm (props) {
 
   function handleSubmit (event) {
     event.preventDefault()
-    props.handleSubmit(inputValue)
+    console.log('test1')
+    props.handleSubmitMessage(inputValue)
+    setInputValue('')
   }
 
   return (

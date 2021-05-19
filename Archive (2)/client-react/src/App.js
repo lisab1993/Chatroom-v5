@@ -4,6 +4,8 @@ import Rooms from './Rooms'
 import Signin from './Signin'
 import MessageForm from './MessageForm'
 import io from '../../node_modules/socket.io/client-dist/socket.io.js'
+import { useHistory, Redirect } from "react-router-dom";
+
 
 
 import {
@@ -23,12 +25,14 @@ class App extends React.Component {
       nick: '',
       isLoggedIn: false,
       userValue: '',
+      redirect: '/',
     }
 
     this.handleSubmitMessage = this.handleSubmitMessage.bind(this)
     this.handleAll = this.handleAll.bind(this)
     this.getRooms = this.getRooms.bind(this)
     this.handleRoomState = this.handleRoomState.bind(this)
+    this.handleLogout = this.handleLogout.bind(this)
   }
 
 
@@ -62,6 +66,8 @@ class App extends React.Component {
   }
 
   handleSubmitMessage(text) {
+    // event.preventDefault()
+    console.log('test')
     const message = { nick: this.state.nick, room: this.state.room, text }
     // console.log(message)
     socket.emit('chat message', message)
@@ -77,6 +83,10 @@ class App extends React.Component {
     return uniqrooms
   }
 
+  handleLogout() {
+    this.setState({isLoggedIn: false})
+  }
+
 
   render() {
     return (
@@ -84,25 +94,28 @@ class App extends React.Component {
         <h1>Chatroom phase 4</h1>
         <Router>
           <div>
+            <header>
             <nav>
-              <ul>
-                <li>
+                <button>
                   <Link to="/">Home</Link>
-                </li>
-                {/* <li>
-                  <Link to="/Rooms/:room">Rooms</Link>
-                </li> */}
-                <li>
+                </button>
+
+                {/* {!this.state.isLoggedIn &&
+                <button>
                   <Link to="/Login">Login</Link>
-                </li>
-                <li>
+                </button>} */}
+
+                {this.state.isLoggedIn && 
+                <button onClick={this.handleLogout}>
                   <Link to="/Logout">Logout</Link>
-                </li>
-                <li>
-                  <Link to="/Signin">Signin</Link>
-                </li>
-              </ul>
+                </button>}
+
+                {!this.state.isLoggedIn &&
+                <button>
+                  <Link to="/Signin">Sign Up</Link>
+                </button>}
             </nav>
+            </header>
 
             <Switch>
               <Route exact path="/">
@@ -127,12 +140,18 @@ class App extends React.Component {
                   MessageForm={MessageForm}
                   getRooms={this.getRooms}
                   handleRoomState={this.handleRoomState}
+                  handleSubmitMessage={this.handleSubmitMessage}
                 />
               </Route>
 
-              <Route path="/Login"><Login /></Route>
+              {/* <Route path="/Login"><Login /></Route> */}
 
-              <Route path="/Logout"><Logout /></Route>
+              <Route path="/Logout">
+                <Logout 
+                handleLogout={this.handleLogout}
+                redirect={this.state.redirect}
+                />
+                </Route>
 
               <Route path="/Signin">
                 <Signin setState={(nick) => this.setState({ nick })}
@@ -140,7 +159,6 @@ class App extends React.Component {
                   userValue={this.state.userValue}
                 />
               </Route>
-
             </Switch>
           </div>
         </Router>
@@ -149,21 +167,21 @@ class App extends React.Component {
   }
 }
 
+//Currently, signin also logs us in
+
+//signin to create a user with name, pass, and email
+//save that as our users
+//be able to log in with existing info
+
 
 function Home(props) {
-  // useEffect(() => {
-  //   const room = props.match.params
-  //   console.log(room)
-  // })
-
-
   return (props.isLoggedIn
     // True  
     ?
     <div>
       Welcome {props.nick}!
     <Rooms handleRoomState={props.handleRoomState} messages={props.messages} getRooms={props.getRooms(props.messages, props.room)} />
-      <MessageForm handleSubmitMessage={props.handleSubmitMessage} />
+    <MessageForm handleSubmitMessage={props.handleSubmitMessage} />
 
     </div>
     // False 
@@ -188,12 +206,13 @@ function RoomMessages(props) {
   )
 }
 
-function Login() {
-  return <h2>Login</h2>
-}
+// function Login() {
+//   return <h2>Login</h2>
+// }
 
-function Logout() {
-  return <h2>Logout</h2>
+function Logout(props) {
+  // const history = useHistory()
+  return <Redirect to={props.redirect}/>
 }
 
 

@@ -53,26 +53,26 @@ class App extends React.Component {
     this.setState({ nick })
     if (nick !== '') {
       // console.log('hello from handleislogged')
-      this.setState({isLoggedIn: true})
+      this.setState({ isLoggedIn: true })
     }
   }
 
-  handleRoomState (room) {
-    this.setState({room: room})
+  handleRoomState(room) {
+    this.setState({ room: room })
   }
 
-  handleSubmitMessage (text) {
+  handleSubmitMessage(text) {
     const message = { nick: this.state.nick, room: this.state.room, text }
     // console.log(message)
     socket.emit('chat message', message)
   }
 
-  getRooms (messages, newRoom) {
+  getRooms(messages, newRoom) {
     console.log(messages)
     const rooms = messages.map(msg => msg.room)
     rooms.push(newRoom)
     const allRooms = rooms.filter(room => room)
-  
+
     const uniqrooms = Array.from(new Set(allRooms))
     return uniqrooms
   }
@@ -89,9 +89,9 @@ class App extends React.Component {
                 <li>
                   <Link to="/">Home</Link>
                 </li>
-                <li>
+                {/* <li>
                   <Link to="/Rooms/:room">Rooms</Link>
-                </li>
+                </li> */}
                 <li>
                   <Link to="/Login">Login</Link>
                 </li>
@@ -106,18 +106,29 @@ class App extends React.Component {
 
             <Switch>
               <Route exact path="/">
-                <Home isLoggedIn={this.state.isLoggedIn} 
-                nick={this.state.nick}
-                messages={this.state.messages} 
-                room={this.state.room}
-                Room={Rooms}
-                MessageForm={MessageForm}
-                handleSubmitMessage={this.handleSubmitMessage}
-                getRooms={this.getRooms}
-                useEffect={this.useEffect}
-                handleRoomState={this.handleRoomState}
+                <Home isLoggedIn={this.state.isLoggedIn}
+                  nick={this.state.nick}
+                  messages={this.state.messages}
+                  room={this.state.room}
+                  Room={Rooms}
+                  MessageForm={MessageForm}
+                  handleSubmitMessage={this.handleSubmitMessage}
+                  getRooms={this.getRooms}
+                  useEffect={this.useEffect}
+                  handleRoomState={this.handleRoomState}
                 />
-                </Route>
+              </Route>
+
+              <Route path="/Rooms/:room">
+                <RoomMessages
+                  messages={this.state.messages}
+                  room={this.state.room}
+                  Room={Rooms}
+                  MessageForm={MessageForm}
+                  getRooms={this.getRooms}
+                  handleRoomState={this.handleRoomState}
+                />
+              </Route>
 
               <Route path="/Login"><Login /></Route>
 
@@ -125,9 +136,9 @@ class App extends React.Component {
 
               <Route path="/Signin">
                 <Signin setState={(nick) => this.setState({ nick })}
-                handleAll={this.handleAll} 
-                userValue={this.state.userValue} 
-              />
+                  handleAll={this.handleAll}
+                  userValue={this.state.userValue}
+                />
               </Route>
 
             </Switch>
@@ -148,21 +159,32 @@ function Home(props) {
 
   return (props.isLoggedIn
     // True  
-    ? 
-  <div>
-    Welcome {props.nick}!
+    ?
+    <div>
+      Welcome {props.nick}!
     <Rooms handleRoomState={props.handleRoomState} messages={props.messages} getRooms={props.getRooms(props.messages, props.room)} />
-        <MessageForm  handleSubmitMessage = {props.handleSubmitMessage} /> 
-        {props.messages
-          .filter(msg => msg.room === props.room)
-          .map((msg, index) => <li key={index}>{msg.text}</li>)}
-  </div> 
-  // False 
-  : 
-  <div
-  >Please Sign In
+      <MessageForm handleSubmitMessage={props.handleSubmitMessage} />
+
+    </div>
+    // False 
+    :
+    <div
+    >Please Sign In
   </div>
 
+  )
+}
+
+//messages and room
+function RoomMessages(props) {
+  return (
+    <div>
+      <Rooms handleRoomState={props.handleRoomState} messages={props.messages} getRooms={props.getRooms(props.messages, props.room)} />
+      <MessageForm handleSubmitMessage={props.handleSubmitMessage} />
+      {props.messages
+        .filter(msg => msg.room === props.room)
+        .map((msg, index) => <li key={index}>{msg.text}</li>)}
+    </div>
   )
 }
 

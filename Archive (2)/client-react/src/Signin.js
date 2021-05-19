@@ -5,7 +5,7 @@ import { useHistory } from "react-router-dom";
 export const Signin = (props) => {
     const [userValue, setUserValue] = useState('')
     const history = useHistory()
-    console.log(props)
+    // console.log(props)
     
     function handleChange(event) {
         setUserValue(event.target.value)

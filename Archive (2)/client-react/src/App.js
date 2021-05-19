@@ -1,9 +1,11 @@
 import './App.css'
-import React from 'react'
+import React, { useState, useEffect } from 'react';
 import Rooms from './Rooms'
 import Signin from './Signin'
 import MessageForm from './MessageForm'
 import io from '../../node_modules/socket.io/client-dist/socket.io.js'
+
+
 import {
   BrowserRouter as Router,
   Switch,
@@ -23,17 +25,20 @@ class App extends React.Component {
       userValue: '',
     }
 
+    this.handleSubmitMessage = this.handleSubmitMessage.bind(this)
     this.handleAll = this.handleAll.bind(this)
+    this.getRooms = this.getRooms.bind(this)
+    this.handleRoomState = this.handleRoomState.bind(this)
   }
 
 
 
   componentDidMount() {
     socket.on('chat message', msg => {
-      console.log(this.state.messages)
+      // console.log(this.state.messages)
       this.setState({ messages: this.state.messages.concat(msg) })
-      console.log('got a message')
-      console.log(msg)
+      // console.log('got a message')
+      // console.log(msg)
     })
 
     fetch('/messages')
@@ -47,15 +52,29 @@ class App extends React.Component {
   handleAll(nick) {
     this.setState({ nick })
     if (nick !== '') {
-      console.log('hello from handleislogged')
+      // console.log('hello from handleislogged')
       this.setState({isLoggedIn: true})
     }
   }
 
+  handleRoomState (room) {
+    this.setState({room: room})
+  }
+
   handleSubmitMessage (text) {
     const message = { nick: this.state.nick, room: this.state.room, text }
-    console.log(message)
+    // console.log(message)
     socket.emit('chat message', message)
+  }
+
+  getRooms (messages, newRoom) {
+    console.log(messages)
+    const rooms = messages.map(msg => msg.room)
+    rooms.push(newRoom)
+    const allRooms = rooms.filter(room => room)
+  
+    const uniqrooms = Array.from(new Set(allRooms))
+    return uniqrooms
   }
 
 
@@ -70,9 +89,9 @@ class App extends React.Component {
                 <li>
                   <Link to="/">Home</Link>
                 </li>
-                {/* <li>
+                <li>
                   <Link to="/Rooms/:room">Rooms</Link>
-                </li> */}
+                </li>
                 <li>
                   <Link to="/Login">Login</Link>
                 </li>
@@ -94,6 +113,9 @@ class App extends React.Component {
                 Room={Rooms}
                 MessageForm={MessageForm}
                 handleSubmitMessage={this.handleSubmitMessage}
+                getRooms={this.getRooms}
+                useEffect={this.useEffect}
+                handleRoomState={this.handleRoomState}
                 />
                 </Route>
 
@@ -111,9 +133,6 @@ class App extends React.Component {
             </Switch>
           </div>
         </Router>
-
-
-
       </div>
     )
   }
@@ -121,18 +140,25 @@ class App extends React.Component {
 
 
 function Home(props) {
-  return (props.isLoggedIn ? 
+  // useEffect(() => {
+  //   const room = props.match.params
+  //   console.log(room)
+  // })
+
+
+  return (props.isLoggedIn
+    // True  
+    ? 
   <div>
     Welcome {props.nick}!
-    <Rooms messages={props.messages} setRoom={(room) => this.setState({ room })} room={props.room} />
-        <MessageForm handleSubmitMessage={this.handleSubmitMessage.bind(this)} /> 
+    <Rooms handleRoomState={props.handleRoomState} messages={props.messages} getRooms={props.getRooms(props.messages, props.room)} />
+        <MessageForm  handleSubmitMessage = {props.handleSubmitMessage} /> 
         {props.messages
           .filter(msg => msg.room === props.room)
           .map((msg, index) => <li key={index}>{msg.text}</li>)}
   </div> 
-
+  // False 
   : 
-
   <div
   >Please Sign In
   </div>

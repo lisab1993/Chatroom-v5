@@ -119,7 +119,8 @@ class App extends React.Component {
 
             <Switch>
               <Route exact path="/">
-                <Home isLoggedIn={this.state.isLoggedIn}
+                <Home 
+                isLoggedIn={this.state.isLoggedIn}
                   nick={this.state.nick}
                   messages={this.state.messages}
                   room={this.state.room}
@@ -154,7 +155,8 @@ class App extends React.Component {
                 </Route>
 
               <Route path="/Signin">
-                <Signin setState={(nick) => this.setState({ nick })}
+                <Signin 
+                  setState={(nick) => this.setState({ nick })}
                   handleAll={this.handleAll}
                   userValue={this.state.userValue}
                 />
